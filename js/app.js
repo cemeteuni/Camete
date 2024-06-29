@@ -5,12 +5,12 @@ import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.c
 
 // Configura il tuo progetto Firebase
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBzhnYaRS9oGY-FzrAMBrVjOj9NKTqVAq0",
+    authDomain: "catmete-bfe80.firebaseapp.com",
+    projectId: "catmete-bfe80",
+    storageBucket: "catmete-bfe80.appspot.com",
+    messagingSenderId: "150648245166",
+    appId: "1:150648245166:web:c12f6324794934ec16563f"
 };
 
 // Inizializza Firebase
