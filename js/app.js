@@ -20,76 +20,14 @@ const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
+    const registerForm = document.getElementById("register-form");
+
     if (loginForm) {
         loginForm.addEventListener("submit", handleLogin);
     }
 
-    const registerForm = document.getElementById("register-form");
     if (registerForm) {
         registerForm.addEventListener("submit", handleRegister);
-    }
-});
-
-function handleLogin(e) {
-    e.preventDefault();
-    const email = e.target["login-email"].value;
-    const password = e.target["login-password"].value;
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            window.location.href = "chat.html";
-        })
-        .catch((error) => {
-            console.error("Error in login:", error);
-        });
-}
-
-function handleRegister(e) {
-    e.preventDefault();
-    const email = e.target["register-email"].value;
-    const password = e.target["register-password"].value;
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            window.location.href = "chat.html";
-        })
-        .catch((error) => {
-            console.error("Error in registration:", error);
-        });
-}
-
-    if (loginForm) {
-        loginForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            console.log("Login form submitted"); // Debugging log
-            const email = loginForm["login-email"].value;
-            const password = loginForm["login-password"].value;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    console.log("Login successful"); // Debugging log
-                    window.location.href = "chat.html";
-                })
-                .catch((error) => {
-                    console.error("Error in login:", error);
-                });
-        });
-    }
-
-    if (registerForm) {
-        registerForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            console.log("Register form submitted"); // Debugging log
-            const email = registerForm["register-email"].value;
-            const password = registerForm["register-password"].value;
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    console.log("Registration successful"); // Debugging log
-                    window.location.href = "chat.html";
-                })
-                .catch((error) => {
-                    console.error("Error in registration:", error);
-                });
-        });
     }
 
     // Ensure onAuthStateChanged is set up correctly
@@ -108,6 +46,34 @@ function handleRegister(e) {
     });
 });
 
+function handleLogin(e) {
+    e.preventDefault();
+    const email = e.target["login-email"].value;
+    const password = e.target["login-password"].value;
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            console.log("Login successful"); // Debugging log
+            window.location.href = "chat.html";
+        })
+        .catch((error) => {
+            console.error("Error in login:", error);
+        });
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const email = e.target["register-email"].value;
+    const password = e.target["register-password"].value;
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            console.log("Registration successful"); // Debugging log
+            window.location.href = "chat.html";
+        })
+        .catch((error) => {
+            console.error("Error in registration:", error);
+        });
+}
+
 // Function to load chats
 function loadChats() {
     const messagesDiv = document.getElementById("messages");
@@ -125,54 +91,58 @@ function loadChats() {
 }
 
 // Function to send a message
-const messageForm = document.getElementById("message-form");
-if (messageForm) {
-    messageForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        console.log("Message form submitted"); // Debugging log
-        const messageInput = document.getElementById("message-input");
-        const text = messageInput.value;
-        const user = auth.currentUser;
+document.addEventListener("DOMContentLoaded", () => {
+    const messageForm = document.getElementById("message-form");
+    if (messageForm) {
+        messageForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            console.log("Message form submitted"); // Debugging log
+            const messageInput = document.getElementById("message-input");
+            const text = messageInput.value;
+            const user = auth.currentUser;
 
-        addDoc(collection(db, "messages"), {
-            email: user.email,
-            text: text,
-            timestamp: new Date()
+            addDoc(collection(db, "messages"), {
+                email: user.email,
+                text: text,
+                timestamp: new Date()
+            });
+
+            messageInput.value = "";
         });
-
-        messageInput.value = "";
-    });
-}
+    }
+});
 
 // Function to add a friend
-const searchFriendForm = document.getElementById("search-friend-form");
-if (searchFriendForm) {
-    searchFriendForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        console.log("Search friend form submitted"); // Debugging log
-        const friendEmail = document.getElementById("friend-email").value;
-        const user = auth.currentUser;
+document.addEventListener("DOMContentLoaded", () => {
+    const searchFriendForm = document.getElementById("search-friend-form");
+    if (searchFriendForm) {
+        searchFriendForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            console.log("Search friend form submitted"); // Debugging log
+            const friendEmail = document.getElementById("friend-email").value;
+            const user = auth.currentUser;
 
-        const q = query(collection(db, "users"), where("email", "==", friendEmail));
-        
-        getDocs(q).then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                const friendDoc = querySnapshot.docs[0];
-                const friendId = friendDoc.id;
+            const q = query(collection(db, "users"), where("email", "==", friendEmail));
+            
+            getDocs(q).then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const friendDoc = querySnapshot.docs[0];
+                    const friendId = friendDoc.id;
 
-                setDoc(doc(db, "users", user.uid, "friends", friendId), {
-                    email: friendEmail
-                });
+                    setDoc(doc(db, "users", user.uid, "friends", friendId), {
+                        email: friendEmail
+                    });
 
-                loadFriends();
-            } else {
-                console.error("Friend not found");
-            }
-        }).catch((error) => {
-            console.error("Error searching for friend:", error);
+                    loadFriends();
+                } else {
+                    console.error("Friend not found");
+                }
+            }).catch((error) => {
+                console.error("Error searching for friend:", error);
+            });
         });
-    });
-}
+    }
+});
 
 // Function to load friends
 function loadFriends() {
