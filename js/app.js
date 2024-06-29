@@ -18,10 +18,43 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Check if elements exist before adding event listeners
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
+    if (loginForm) {
+        loginForm.addEventListener("submit", handleLogin);
+    }
+
     const registerForm = document.getElementById("register-form");
+    if (registerForm) {
+        registerForm.addEventListener("submit", handleRegister);
+    }
+});
+
+function handleLogin(e) {
+    e.preventDefault();
+    const email = e.target["login-email"].value;
+    const password = e.target["login-password"].value;
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            window.location.href = "chat.html";
+        })
+        .catch((error) => {
+            console.error("Error in login:", error);
+        });
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const email = e.target["register-email"].value;
+    const password = e.target["register-password"].value;
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            window.location.href = "chat.html";
+        })
+        .catch((error) => {
+            console.error("Error in registration:", error);
+        });
+}
 
     if (loginForm) {
         loginForm.addEventListener("submit", (e) => {
