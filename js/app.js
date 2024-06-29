@@ -1,7 +1,7 @@
 // Import and configure Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -21,6 +21,9 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
     const registerForm = document.getElementById("register-form");
+    const messageDiv = document.createElement("div");
+    messageDiv.id = "message";
+    document.body.appendChild(messageDiv);
 
     if (loginForm) {
         loginForm.addEventListener("submit", handleLogin);
@@ -36,6 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("User is authenticated"); // Debugging log
             if (window.location.pathname === '/chat.html') {
                 loadChats();
+            } else {
+                window.location.href = "chat.html";
             }
         } else {
             console.log("User is not authenticated"); // Debugging log
@@ -57,6 +62,7 @@ function handleLogin(e) {
         })
         .catch((error) => {
             console.error("Error in login:", error);
+            displayMessage(`Login error: ${error.message}`, "error");
         });
 }
 
@@ -67,11 +73,31 @@ function handleRegister(e) {
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             console.log("Registration successful"); // Debugging log
-            window.location.href = "chat.html";
+            // Save user data to Firestore
+            addDoc(collection(db, "users"), {
+                email: email
+            }).then(() => {
+                console.log("User data saved to Firestore");
+                window.location.href = "chat.html";
+            }).catch((error) => {
+                console.error("Error saving user data:", error);
+                displayMessage(`Error saving user data: ${error.message}`, "error");
+            });
         })
         .catch((error) => {
             console.error("Error in registration:", error);
+            displayMessage(`Registration error: ${error.message}`, "error");
         });
+}
+
+function displayMessage(message, type) {
+    const messageDiv = document.getElementById("message");
+    messageDiv.textContent = message;
+    messageDiv.className = type;
+    setTimeout(() => {
+        messageDiv.textContent = "";
+        messageDiv.className = "";
+    }, 5000);
 }
 
 // Function to load chats
@@ -111,52 +137,3 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
-
-// Function to add a friend
-document.addEventListener("DOMContentLoaded", () => {
-    const searchFriendForm = document.getElementById("search-friend-form");
-    if (searchFriendForm) {
-        searchFriendForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            console.log("Search friend form submitted"); // Debugging log
-            const friendEmail = document.getElementById("friend-email").value;
-            const user = auth.currentUser;
-
-            const q = query(collection(db, "users"), where("email", "==", friendEmail));
-            
-            getDocs(q).then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    const friendDoc = querySnapshot.docs[0];
-                    const friendId = friendDoc.id;
-
-                    setDoc(doc(db, "users", user.uid, "friends", friendId), {
-                        email: friendEmail
-                    });
-
-                    loadFriends();
-                } else {
-                    console.error("Friend not found");
-                }
-            }).catch((error) => {
-                console.error("Error searching for friend:", error);
-            });
-        });
-    }
-});
-
-// Function to load friends
-function loadFriends() {
-    const user = auth.currentUser;
-    const friendsList = document.getElementById("friends");
-    const friendsCol = collection(db, "users", user.uid, "friends");
-    
-    onSnapshot(friendsCol, (snapshot) => {
-        friendsList.innerHTML = "";
-        snapshot.forEach((doc) => {
-            const friend = doc.data();
-            const friendLi = document.createElement("li");
-            friendLi.textContent = friend.email;
-            friendsList.appendChild(friendLi);
-        });
-    });
-}
