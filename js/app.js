@@ -10,7 +10,7 @@ const firebaseConfig = {
     projectId: "camateapp",
     storageBucket: "camateapp.appspot.com",
     messagingSenderId: "1:219286026906:web:498d85c4a7fb63e7c8fd23",
-    appId: "YOUR_APP_ID"
+    appId: "G-YLMP8N75ZJ"
 };
 
 // Initialize Firebase
