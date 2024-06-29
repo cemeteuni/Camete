@@ -5,11 +5,11 @@ import { getFirestore, collection, addDoc, getDocs, query, where, onSnapshot, do
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    apiKey: "AIzaSyCSMyNSYZ-31NGHUxch4AmkwpNwCvw-ybg",
+    authDomain: "camateapp.firebaseapp.com",
+    projectId: "camateapp",
+    storageBucket: "camateapp.appspot.com",
+    messagingSenderId: "1:219286026906:web:498d85c4a7fb63e7c8fd23",
     appId: "YOUR_APP_ID"
 };
 
